@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+const fs = require('fs').promises;
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+const model = 'gemini-2.5-flash'
+
+const prompt = "Transcribe this media accurately. Include all the spoken words.";
+
+const filename = process.argv[2]
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY
+
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+const getMimeType = (name = 'file.mp4') => {
+  const parts = name.split('.')
+
+  switch (parts.at(parts.length - 1)) {
+    // video
+    case 'mp4': return 'video/mpeg'
+    case 'ogg': return 'video/ogg'
+    case 'webm': return 'video/webm'
+    // audio
+    case 'mp3': return 'audio/mpeg'
+    case 'wav': return 'audio/wav'
+    // image
+    case 'gif': return 'image/gif'
+    case 'png': return 'image/png'
+    case 'jpeg': case 'jpg': return 'image/jpeg'
+    case 'bmp': return 'image/bmp'
+    case 'webp': return 'image/webp'
+  }
+
+  return 'application/octet-stream'
+}
+
+const saveTextFile = async (filename, text) => await fs.writeFile(`${filename}.txt`, text.toString())
+
+async function transcribeAudio() {
+  const generativeModel = genAI.getGenerativeModel({ model });
+
+  const mediaFile = await fs.readFile(filename);
+  const mediaBase64 = mediaFile.toString('base64');
+
+  const result = await generativeModel.generateContent([
+    {
+      inlineData: {
+        mimeType: getMimeType(filename),
+        data: mediaBase64,
+      },
+    },
+    { text: prompt },
+  ]);
+
+  await saveTextFile(filename, result.response.text());
+}
+
+transcribeAudio().catch(console.error);
