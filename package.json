@@ -1,0 +1,19 @@
+{
+  "name": "mpeg2json",
+  "version": "0.1.0",
+  "description": "Speech to text, from MPEG to JSON files",
+  "bin": "bin/mpeg2json",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tarsislimadev/mpeg2json.git"
+  },
+  "author": "Tarsis Lima (https://github.com/tarsislimadev)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tarsislimadev/mpeg2json/issues"
+  },
+  "homepage": "https://github.com/tarsislimadev/mpeg2json#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1"
+  }
+}
